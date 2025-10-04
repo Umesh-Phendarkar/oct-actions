@@ -1,11 +1,32 @@
-name: First Workflow
-on: 
-  workflow_dispatch:  # Allows manual triggering of this workflow
+name: Python Tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
 jobs:
-  first-job:
-    runs-on: ubuntu-latest   # Runner environment provided by GitHub
+  test:
+    runs-on: ubuntu-latest
+
     steps:
-      - name: Print Greeting
-        run: echo "Hello World!"
-      - name: Print Goodbye
-        run: echo "Done - Bye!... 2025 .. Happy new year ..."
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install flake8 pytest
+
+      - name: Lint with flake8
+        run: |
+          flake8
+
+      - name: Run tests
+        run: |
+          pytest
